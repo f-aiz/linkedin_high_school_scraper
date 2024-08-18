@@ -32,10 +32,11 @@ This project includes a Python script for extracting high school information fro
 
 Create a CSV file named input_linkedin_profiles.csv with the following structure:
 url
-file:///path/to/profile1.html
-file:///path/to/profile2.html
-...
-Replace file:///path/to/profileN.html with the actual paths to your local HTML profile files.
+profile1.html path
+profile2.html path
+
+
+Replace html paths with your local HTML profile files.
 
 **Run the Script:**
 
