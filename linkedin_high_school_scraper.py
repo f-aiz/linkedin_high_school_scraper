@@ -2,9 +2,9 @@ import pandas as pd
 from bs4 import BeautifulSoup
 import re
 
+# Define a list of common high school keywords
 HIGH_SCHOOL_KEYWORDS = [
-    'High School', 'Academy', 'Institute', 'College', 'Secondary School', 'Prep School',
-    'Senior High School', 'Junior High School', 'Vocational School', 'Trade School', 'High School Diploma'
+    'High School', 'Academy', 'Institute', 'College', 'Secondary School', 'Prep School', 'School'
 ]
 
 def extract_high_school_from_html(file_path):
@@ -13,18 +13,23 @@ def extract_high_school_from_html(file_path):
             content = file.read()
             soup = BeautifulSoup(content, 'html.parser')
             
+            # Attempt to find the education section in multiple ways
             education_section = soup.find('section', {'id': 'education-section'}) or soup.find('div', {'class': 'education-section'})
             
             if education_section:
+                # Collect all text elements within the education section
                 text_elements = education_section.find_all(text=True)
                 
+                # Iterate through each text element to find high school names
                 for text in text_elements:
                     for keyword in HIGH_SCHOOL_KEYWORDS:
                         if keyword.lower() in text.lower():
+                            # Use regex to extract potential high school names
                             possible_high_school_names = re.findall(r'\b[\w\s\'-]+(?:{}|{})\b'.format(
-                                '|'.join(re.escape(keyword) for keyword in HIGH_SCHOOL_KEYWORDS), keyword
-                            ), text, re.IGNORECASE)
+                                '|'.join(HIGH_SCHOOL_KEYWORDS), keyword
+                            ), text)
                             if possible_high_school_names:
+                                # Return the first valid result
                                 return possible_high_school_names[0].strip()
                 
             return 'High School not found'
@@ -44,8 +49,8 @@ def main():
         high_schools.append(high_school)
     
     df['High School'] = high_schools
-    df.index = df.index + 1
-    df.to_csv(output_file, index_label='Index')
+    df.to_csv(output_file, index=False)
     print(f"Extraction completed. Results saved to {output_file}")
 
-main()
+if __name__ == "__main__":
+    main()
